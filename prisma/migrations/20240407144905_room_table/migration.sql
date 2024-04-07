@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "rooms" ALTER COLUMN "time-end" SET DATA TYPE DATE,
+ALTER COLUMN "time-start" SET DATA TYPE DATE;
