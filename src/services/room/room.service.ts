@@ -8,6 +8,7 @@ import { CreateRoomDto } from './DTO/CreateRoom.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { GetPicturesNameResponse } from './Response/GetPicturesName.response';
 import { RoomResponse } from './Response/Room.response.dto';
+import { CreateRoomResponse } from './Response/CreateRoom.response';
 
 
 const UPLOAD_PATH = '../../../../uploads/'
@@ -18,7 +19,7 @@ export class RoomService {
   // ------------------------------ Room ------------------------------ //
 
   // --------------- Add or Update Room --------------- //
-  async addRoom(dto: CreateRoomDto): Promise<RoomResponse> {
+  async addRoom(dto: CreateRoomDto): Promise<CreateRoomResponse> {
     const room = await this.prismaService.room.create({
       data: {
         address: dto.address,
@@ -49,7 +50,7 @@ export class RoomService {
   }
 
   // --------------- Update Room --------------- //
-  async updateRoom(id: number, dto: Partial<CreateRoomDto>): Promise<RoomResponse> {
+  async updateRoom(id: number, dto: Partial<CreateRoomDto>): Promise<CreateRoomResponse> {
     const existRoom = await this.prismaService.room.findUnique({where: {id}})
     if(!existRoom) throw new BadRequestException('Такой комнаты не существует')
     const room = await this.prismaService.room.update({
@@ -70,7 +71,16 @@ export class RoomService {
 
   // --------------- Get Room by id --------------- //
   async getRoom(roomId: number): Promise<RoomResponse> {
-    return await this.prismaService.room.findFirst({where: {id: roomId}})
+    return await this.prismaService.room.findFirst({
+      where: {id: roomId},
+      include: {
+        picture: {
+          select: {
+            name: true
+          }
+        }
+      }
+    })
   }
 
   // --------------- Delete Room by id --------------- //

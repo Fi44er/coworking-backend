@@ -7,6 +7,7 @@ import { Response } from "express";
 import { GetPicturesNameResponse } from "./Response/GetPicturesName.response";
 import { RoomResponse } from "./Response/Room.response.dto";
 import { ApiBadRequestResponse, ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags } from "@nestjs/swagger";
+import { CreateRoomResponse } from "./Response/CreateRoom.response";
 
 @Public()
 @ApiTags('rooms')
@@ -19,8 +20,8 @@ export class RoomController {
   @Post('add-room')
   @ApiOperation({ summary: 'Add a new room' })
   @ApiBody({ type: CreateRoomDto })
-  @ApiResponse({ status: 201, description: 'Room successfully created', type: RoomResponse })
-  async addRoom(@Body() dto: CreateRoomDto): Promise<RoomResponse> {
+  @ApiResponse({ status: 201, description: 'Room successfully created', type: CreateRoomResponse })
+  async addRoom(@Body() dto: CreateRoomDto): Promise<CreateRoomResponse> {
     return this.roomService.addRoom(dto);
   }
 
@@ -46,9 +47,9 @@ export class RoomController {
   @ApiOperation({ summary: 'Update room by id' })
   @ApiParam({ name: 'id', description: 'Room ID' })
   @ApiBody({ type: CreateRoomDto })
-  @ApiResponse({ status: 200, description: 'Room successfully updated', type: RoomResponse })
+  @ApiResponse({ status: 200, description: 'Room successfully updated', type: CreateRoomResponse })
   @ApiBadRequestResponse({ description: 'Bad request' })
-  async updateRoom(@Param('id') id: number, @Body() dto: Partial<CreateRoomDto>): Promise<RoomResponse> {
+  async updateRoom(@Param('id') id: number, @Body() dto: Partial<CreateRoomDto>): Promise<CreateRoomResponse> {
     if (!id) throw new BadRequestException('Room ID not provided');
     return this.roomService.updateRoom(+id, dto);
   }

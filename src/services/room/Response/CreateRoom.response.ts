@@ -1,6 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger"
 
-export class RoomResponse {
+export class CreateRoomResponse {
 
     id: number
     @ApiProperty()
@@ -26,6 +26,4 @@ export class RoomResponse {
     
     @ApiProperty()
     timeEnd: Date
-
-    picture: {name: string}[]
 }

@@ -1,4 +1,4 @@
-import { BadGatewayException, BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { countingTimeEnd } from 'lib/utils/convert-to-time.util';
 import { CreateOrderDto } from './DTO/CreateOrder.dto';
@@ -6,6 +6,8 @@ import { OrderResponse } from './Response/Order.response';
 import { UpdateOrderDto } from './DTO/UpdateOrder.dto';
 import { convertStringToTime } from 'lib/utils/convertStringToDate.util';
 import { OrderStatus } from '@prisma/client';
+import { EmailService } from '../mailer/mailer.service';
+
 
 
 const daysOfWeek: { [key: string]: string } = {
@@ -20,7 +22,10 @@ const daysOfWeek: { [key: string]: string } = {
 
 @Injectable()
 export class OrderService {
-    constructor(private readonly prismaService: PrismaService) {}
+    constructor(
+        private readonly prismaService: PrismaService,
+        private readonly emailService: EmailService
+    ) {}
 
     // ------------------------------ Order ------------------------------ //
 
@@ -45,6 +50,9 @@ export class OrderService {
                 payment
             }
         })
+
+        await this.emailService.sendEmail(order)
+
         return order
     }
 

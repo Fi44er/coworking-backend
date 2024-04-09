@@ -11,6 +11,7 @@ import { RoomModule } from './services/room/room.module';
 import { OrderModule } from './services/order/order.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
+import { EmailsModule } from './services/mailer/mailer.module';
 
 @Module({
   imports: [
@@ -20,7 +21,8 @@ import { join } from 'path';
     AdminModule, 
     AuthModule, 
     RoomModule, 
-    OrderModule, 
+    OrderModule,
+    EmailsModule
   ],
   providers: [
     {
