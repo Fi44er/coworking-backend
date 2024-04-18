@@ -144,7 +144,7 @@ export class RoomService {
 
   // --------------- Delete Picture by id --------------- //
   async deletePicture(pictureName: string): Promise<boolean> {
-    const existFile = existsSync(UPLOAD_PATH + pictureName)
+    const existFile = existsSync(join(__dirname, UPLOAD_PATH + pictureName))
     if(!existFile) throw new BadRequestException('Такого файла не существует')
     const puthToFile = join(__dirname, UPLOAD_PATH + pictureName)
     await rm(puthToFile)
