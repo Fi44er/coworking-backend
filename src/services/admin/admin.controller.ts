@@ -2,7 +2,13 @@ import { AdminResponse } from './response/admin.response';
 import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { AdminService } from './admin.service';
 import { CreateAdminDto } from './DTO/create.dto';
-import { ApiTags, ApiBody, ApiParam, ApiResponse, ApiOperation } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiBody,
+  ApiParam,
+  ApiResponse,
+  ApiOperation,
+} from '@nestjs/swagger';
 import { Public } from 'lib/decorators/public.decorator';
 
 @Public()
@@ -14,7 +20,11 @@ export class AdminController {
   @Post('create')
   @ApiOperation({ summary: 'Create admin' })
   @ApiBody({ type: CreateAdminDto })
-  @ApiResponse({ status: 201, description: 'Admin created', type: AdminResponse })
+  @ApiResponse({
+    status: 201,
+    description: 'Admin created',
+    type: AdminResponse,
+  })
   async save(@Body() dto: CreateAdminDto) {
     const admin = await this.adminService.save(dto);
     return new AdminResponse(admin);

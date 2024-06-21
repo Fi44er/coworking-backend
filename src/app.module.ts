@@ -15,20 +15,21 @@ import { EmailsModule } from './services/mailer/mailer.module';
 
 @Module({
   imports: [
-    ServeStaticModule.forRoot({rootPath: join(__dirname, '../../uploads/')}),
+    ServeStaticModule.forRoot({ rootPath: join(__dirname, '../../uploads/') }),
     ConfigModule.forRoot({ isGlobal: true }),
-    PrismaModule, 
-    AdminModule, 
-    AuthModule, 
-    RoomModule, 
+    PrismaModule,
+    AdminModule,
+    AuthModule,
+    RoomModule,
     OrderModule,
-    EmailsModule
+    EmailsModule,
   ],
   providers: [
     {
       provide: APP_GUARD,
       useClass: JwtAuthGuard,
-    }, AppService
+    },
+    AppService,
   ],
   controllers: [AppController],
 })
