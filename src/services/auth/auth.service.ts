@@ -1,5 +1,10 @@
 import { PrismaService } from './../../prisma/prisma.service';
-import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  Logger,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { LoginAdminDto } from './DTO/login.dto';
 import { AdminService } from '../admin/admin.service';
 import { compareSync } from 'bcrypt';
@@ -8,6 +13,8 @@ import { add } from 'date-fns';
 import { Tokens } from './interfaces/token.interface';
 import { JwtService } from '@nestjs/jwt';
 import { Admin, Token } from '@prisma/client';
+import { ConfigService } from '@nestjs/config';
+import { convertToMilisecondsUtil } from 'lib/utils/convertToMiliseconds.util';
 
 @Injectable()
 export class AuthService {
@@ -16,6 +23,7 @@ export class AuthService {
     private readonly prismaService: PrismaService,
     private readonly jwtService: JwtService,
     private readonly adminService: AdminService,
+    private readonly configService: ConfigService,
   ) {}
 
   async login(dto: LoginAdminDto): Promise<Tokens> {
@@ -28,7 +36,10 @@ export class AuthService {
 
     if (!admin || !compareSync(dto.password, admin.password))
       throw new UnauthorizedException('Не верный логин или пароль');
-    return this.generateTokens(admin);
+    const tokens = this.generateTokens(admin);
+    if (!tokens)
+      throw new BadRequestException('Unable to log in with the provided data');
+    return tokens;
   }
 
   // Если refresh токен есть в бд, удаляет его и генерирует новую пару accsess и refresh
@@ -51,15 +62,17 @@ export class AuthService {
         id: user.id,
         login: user.login,
       });
-    const refreshToken = await this.getRefreshToken(user.id);
-    // return {accessToken: {token: accessToken, exp: }}
-    return { accessToken, refreshToken };
+    const accessExp = convertToMilisecondsUtil(
+      this.configService.get('JWT_EXP'),
+    );
+    await this.getRefreshToken(user.id);
+    return { token: accessToken, exp: accessExp };
   }
 
   // Генерация refresh токена
   private async getRefreshToken(adminId: string): Promise<Token> {
     const _token = await this.prismaService.token.findFirst({
-      where: { adminId: adminId },
+      where: { adminId },
     });
     const token = _token?.token ?? '';
     return this.prismaService.token.upsert({
@@ -77,7 +90,6 @@ export class AuthService {
   }
 
   // Удаление refresh токена
-
   deleteRefreshToken(token: string) {
     return this.prismaService.token.delete({ where: { token } });
   }

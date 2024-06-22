@@ -1,6 +1,4 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { PrismaModule } from './prisma/prisma.module';
 import { AdminModule } from './services/admin/admin.module';
 import { AuthModule } from './services/auth/auth.module';
@@ -29,8 +27,6 @@ import { EmailsModule } from './services/mailer/mailer.module';
       provide: APP_GUARD,
       useClass: JwtAuthGuard,
     },
-    AppService,
   ],
-  controllers: [AppController],
 })
 export class AppModule {}

@@ -10,7 +10,6 @@ import {
   UploadedFiles,
   UseInterceptors,
 } from '@nestjs/common';
-import { Public } from 'lib/decorators/public.decorator';
 import { RoomService } from './room.service';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { CreateRoomDto } from './DTO/CreateRoom.dto';
@@ -25,8 +24,8 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { CreateRoomResponse } from './Response/CreateRoom.response';
+import { Public } from 'lib/decorators/public.decorator';
 
-@Public()
 @ApiTags('rooms')
 @Controller('room')
 export class RoomController {
@@ -48,12 +47,14 @@ export class RoomController {
 
   // --------------- Get All rooms --------------- //
 
+  @Public()
   @Get('get-all-rooms')
   async getAllRooms(): Promise<RoomResponse[]> {
     return this.roomService.getAllRooms();
   }
 
   // --------------- Get Room by id --------------- //
+  @Public()
   @Get('get-room/:id')
   @ApiOperation({ summary: 'Get room by id' })
   @ApiParam({ name: 'id', description: 'Room ID' })
@@ -110,6 +111,7 @@ export class RoomController {
   }
 
   // --------------- Get Names picture by room id --------------- //
+  @Public()
   @Get('get-names-picture-by-room-id/:id')
   @ApiOperation({ summary: 'Get names of pictures by room id' })
   @ApiParam({ name: 'id', description: 'Room ID' })

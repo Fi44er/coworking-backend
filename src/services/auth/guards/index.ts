@@ -1,3 +1,3 @@
-import { JwtAuthGuard } from "./jwt-auth.guard";
+import { JwtAuthGuard } from './jwt-auth.guard';
 
-export const GUARDS = [JwtAuthGuard]
+export const GUARDS = [JwtAuthGuard];

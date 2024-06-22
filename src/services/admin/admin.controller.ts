@@ -9,9 +9,7 @@ import {
   ApiResponse,
   ApiOperation,
 } from '@nestjs/swagger';
-import { Public } from 'lib/decorators/public.decorator';
 
-@Public()
 @Controller('admin')
 @ApiTags('Admin')
 export class AdminController {

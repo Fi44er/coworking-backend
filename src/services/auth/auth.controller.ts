@@ -1,11 +1,9 @@
 import { JwtStrategy } from './strategies/jwt.strategy';
 import {
-  BadRequestException,
   Body,
   Controller,
   Get,
   HttpStatus,
-  Param,
   Post,
   Res,
   UnauthorizedException,
@@ -19,7 +17,7 @@ import { Response } from 'express';
 import { Public } from 'lib/decorators/public.decorator';
 import { ApiTags, ApiBody, ApiResponse, ApiOperation } from '@nestjs/swagger';
 
-const REFRESH_TOKEN = 'refreshtoken';
+const ACCESS_TOKEN = 'accesstoken';
 
 @Public()
 @Controller('auth')
@@ -40,22 +38,21 @@ export class AuthController {
     @Res() res: Response,
   ): Promise<Response> {
     const tokens = await this.authService.login(dto);
-    if (!tokens)
-      throw new BadRequestException('Unable to log in with the provided data');
+
     return this.setRefreshTokenToCookie(tokens, res);
   }
 
   @Get('logout')
   @ApiOperation({ summary: 'Logout' })
   async logout(
-    @Cookie(REFRESH_TOKEN) refreshToken: string,
+    @Cookie(ACCESS_TOKEN) refreshToken: string,
     @Res() res: Response,
   ): Promise<Response> {
     if (!refreshToken) return res.sendStatus(HttpStatus.OK);
     await this.authService.deleteRefreshToken(refreshToken);
-    res.cookie(REFRESH_TOKEN, '', {
-      httpOnly: true,
-      secure: true,
+    res.cookie(ACCESS_TOKEN, '', {
+      httpOnly: false,
+      secure: false,
       expires: new Date(),
     });
     return res.sendStatus(HttpStatus.OK);
@@ -65,7 +62,7 @@ export class AuthController {
   @ApiOperation({ summary: 'Refresh tokens' })
   @ApiResponse({ status: 201, description: 'Tokens refreshed' })
   async refreshToken(
-    @Cookie(REFRESH_TOKEN) refreshToken: string,
+    @Cookie(ACCESS_TOKEN) refreshToken: string,
     @Res() res: Response,
   ): Promise<Response> {
     if (!refreshToken || typeof refreshToken !== 'string')
@@ -75,26 +72,19 @@ export class AuthController {
     return this.setRefreshTokenToCookie(tokens, res);
   }
 
-  @Get('validate-token/:token')
-  async validateToken(@Param('token') token: string) {
-    return this.jwtStrategy.validateToken(token);
-  }
-
   private setRefreshTokenToCookie(tokens: Tokens, res: Response): Response {
     if (!tokens) throw new UnauthorizedException();
     console.log(tokens);
 
-    res.cookie(REFRESH_TOKEN, tokens.refreshToken.token, {
-      httpOnly: true,
+    res.cookie(ACCESS_TOKEN, tokens.token, {
+      httpOnly: false,
       sameSite: 'lax',
-      expires: new Date(tokens.refreshToken.exp),
+      expires: new Date(Date.now() + tokens.exp),
       // secure:
       //   this.configService.get('NODE_ENV', 'development') === 'production',
       path: '/',
     });
 
-    return res
-      .status(HttpStatus.CREATED)
-      .json({ accessToken: tokens.accessToken });
+    return res.status(HttpStatus.CREATED).json({ accessToken: tokens.token });
   }
 }

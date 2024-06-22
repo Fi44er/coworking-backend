@@ -4,7 +4,7 @@ import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { AdminService } from 'src/services/admin/admin.service';
 import { jwtPayload } from '../interfaces/jwt-payload.interface';
-import * as jwt from 'jsonwebtoken';
+import { Request } from 'express';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -14,34 +14,30 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     private readonly adminService: AdminService,
   ) {
     super({
-      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+      jwtFromRequest: ExtractJwt.fromExtractors([
+        (request: Request) => {
+          const token = request.cookies.accesstoken;
+          return token ? token.split(' ')[1] : null;
+        },
+      ]),
+
       ignoreExpiration: false,
       secretOrKey: configService.get('JWT_SECRET'),
     });
   }
 
-  async validateToken(token: string) {
-    try {
-      console.log(token);
+  async validate(payload: jwtPayload) {
+    console.log(payload + 'payload');
 
-      // const decoded: jwtPayload = jwt.verify(token, this.configService.get('JWT_SECRET'));
-      const decoded: jwtPayload = jwt.verify(
-        token,
-        this.configService.get('JWT_SECRET'),
-      ) as jwtPayload;
-
-      console.log(decoded);
-
-      // payload токена(id, login, roles)
-      const user = await this.adminService.findOneAdmin(String(decoded.id));
-      if (!user) {
-        throw new UnauthorizedException();
-      }
-      return decoded;
-    } catch (err) {
-      console.log(err);
-
+    const user = await this.adminService
+      .findOneAdmin(payload.id.toString())
+      .catch((err) => {
+        this.logger.error(err);
+        return null;
+      });
+    if (!user) {
       throw new UnauthorizedException();
     }
+    return true;
   }
 }
