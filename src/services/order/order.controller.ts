@@ -19,7 +19,7 @@ import {
   ApiResponse,
   ApiOperation,
 } from '@nestjs/swagger';
-import { OrderStatus } from '@prisma/client';
+import { UpdateOrderStatusDto } from './DTO/UpdateOrderStatus.dto';
 
 @Controller('order')
 @ApiTags('Order')
@@ -107,8 +107,8 @@ export class OrderController {
   @Put('update-order-status/:id')
   async updateOrderStatus(
     @Param('id') id: string,
-    @Body() status: OrderStatus,
-  ): Promise<OrderStatus> {
+    @Body() status: UpdateOrderStatusDto,
+  ): Promise<UpdateOrderStatusDto> {
     return this.orderService.updateOrderStatus(+id, status);
   }
 }
