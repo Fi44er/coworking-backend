@@ -115,13 +115,4 @@ export class OrderController {
   ): Promise<UpdateOrderStatusDto> {
     return this.orderService.updateOrderStatus(+id, status);
   }
-
-  @Get('filter-orders')
-  async filterOrders() {
-    /*
-    date :  increasing || decreasing 
-    room : id
-    time : increasing || decreasing
-    */
-  }
 }

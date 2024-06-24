@@ -8,6 +8,7 @@ import { convertStringToTime } from 'lib/utils/convertStringToDate.util';
 import { EmailService } from '../mailer/mailer.service';
 import { UpdateOrderStatusDto } from './DTO/UpdateOrderStatus.dto';
 import { FilterOrdersQueryDto } from './DTO/FilterRoomQuery.dto';
+import { Cron, CronExpression } from '@nestjs/schedule';
 
 const daysOfWeek: { [key: string]: string } = {
   1: 'Пн',
@@ -200,5 +201,16 @@ export class OrderService {
     });
 
     return status;
+  }
+
+  @Cron(CronExpression.EVERY_12_HOURS)
+  async deleteOverdueOrders() {
+    await this.prismaService.order.deleteMany({
+      where: {
+        timeEnd: {
+          lte: new Date(), // less than or equal to current date
+        },
+      },
+    });
   }
 }

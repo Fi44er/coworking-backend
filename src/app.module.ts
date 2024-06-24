@@ -10,11 +10,13 @@ import { OrderModule } from './services/order/order.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { EmailsModule } from './services/mailer/mailer.module';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
     ServeStaticModule.forRoot({ rootPath: join(__dirname, '../../uploads/') }),
     ConfigModule.forRoot({ isGlobal: true }),
+    ScheduleModule.forRoot(),
     PrismaModule,
     AdminModule,
     AuthModule,
