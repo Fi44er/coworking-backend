@@ -7,6 +7,7 @@ import { UpdateOrderDto } from './DTO/UpdateOrder.dto';
 import { convertStringToTime } from 'lib/utils/convertStringToDate.util';
 import { EmailService } from '../mailer/mailer.service';
 import { UpdateOrderStatusDto } from './DTO/UpdateOrderStatus.dto';
+import { FilterOrdersQueryDto } from './DTO/FilterRoomQuery.dto';
 
 const daysOfWeek: { [key: string]: string } = {
   1: 'Пн',
@@ -55,8 +56,34 @@ export class OrderService {
   }
 
   // --------------- Get All Order --------------- //
-  async getAllOrders(): Promise<OrderResponse[]> {
-    const orders = await this.prismaService.order.findMany();
+  async getAllOrders(query: FilterOrdersQueryDto): Promise<OrderResponse[]> {
+    console.log(query);
+
+    const { roomId, time } = query;
+    let orders: OrderResponse[] = [];
+    if (roomId) {
+      orders = await this.prismaService.order.findMany({
+        where: {
+          roomId: +roomId,
+        },
+      });
+    } else {
+      orders = await this.prismaService.order.findMany();
+    }
+
+    switch (time) {
+      case 'INCREASING':
+        orders = orders.sort(
+          (a, b) => a.timeStart.getTime() - b.timeStart.getTime(),
+        );
+        break;
+      case 'DECREASING':
+        orders = orders.sort(
+          (a, b) => b.timeStart.getTime() - a.timeStart.getTime(),
+        );
+        break;
+    }
+
     return orders;
   }
 

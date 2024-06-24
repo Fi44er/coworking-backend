@@ -6,6 +6,7 @@ import {
   Param,
   Post,
   Put,
+  Query,
 } from '@nestjs/common';
 import { OrderService } from './order.service';
 import { CreateOrderDto } from './DTO/CreateOrder.dto';
@@ -20,6 +21,7 @@ import {
   ApiOperation,
 } from '@nestjs/swagger';
 import { UpdateOrderStatusDto } from './DTO/UpdateOrderStatus.dto';
+import { FilterOrdersQueryDto } from './DTO/FilterRoomQuery.dto';
 
 @Controller('order')
 @ApiTags('Order')
@@ -53,8 +55,10 @@ export class OrderController {
     type: OrderResponse,
     isArray: true,
   })
-  async getAllOrders(): Promise<OrderResponse[]> {
-    return this.orderService.getAllOrders();
+  async getAllOrders(
+    @Query() query: FilterOrdersQueryDto,
+  ): Promise<OrderResponse[]> {
+    return this.orderService.getAllOrders(query);
   }
 
   // --------------- Get Order by id--------------- //
@@ -110,5 +114,14 @@ export class OrderController {
     @Body() status: UpdateOrderStatusDto,
   ): Promise<UpdateOrderStatusDto> {
     return this.orderService.updateOrderStatus(+id, status);
+  }
+
+  @Get('filter-orders')
+  async filterOrders() {
+    /*
+    date :  increasing || decreasing 
+    room : id
+    time : increasing || decreasing
+    */
   }
 }
