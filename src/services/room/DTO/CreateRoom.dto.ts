@@ -16,10 +16,6 @@ export class CreateRoomDto {
 
   @ApiProperty()
   @IsNumber()
-  price: number;
-
-  @ApiProperty()
-  @IsNumber()
   places: number;
 
   @ApiProperty()

@@ -58,8 +58,6 @@ export class OrderService {
 
   // --------------- Get All Order --------------- //
   async getAllOrders(query: FilterOrdersQueryDto): Promise<OrderResponse[]> {
-    console.log(query);
-
     const { roomId, time } = query;
     let orders: OrderResponse[] = [];
     if (roomId) {
