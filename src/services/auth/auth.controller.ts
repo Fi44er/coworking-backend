@@ -74,7 +74,6 @@ export class AuthController {
 
   private setRefreshTokenToCookie(tokens: Tokens, res: Response): Response {
     if (!tokens) throw new UnauthorizedException();
-    console.log(tokens);
 
     res.cookie(ACCESS_TOKEN, tokens.token, {
       httpOnly: false,

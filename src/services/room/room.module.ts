@@ -8,10 +8,10 @@ import { join } from 'path';
   imports: [
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', '..', '..', '..', '/uploads'),
-      serveRoot: '/uploads'
-    })
+      serveRoot: '/uploads',
+    }),
   ],
   controllers: [RoomController],
-  providers: [RoomService]
+  providers: [RoomService],
 })
 export class RoomModule {}

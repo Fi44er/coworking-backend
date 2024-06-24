@@ -27,8 +27,6 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(payload: jwtPayload) {
-    console.log(payload + 'payload');
-
     const user = await this.adminService
       .findOneAdmin(payload.id.toString())
       .catch((err) => {

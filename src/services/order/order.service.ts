@@ -163,8 +163,6 @@ export class OrderService {
 
   // --------------- Update order status --------------- //
   async updateOrderStatus(id: number, status: UpdateOrderStatusDto) {
-    console.log(status);
-
     const order = await this.prismaService.order.findFirst({ where: { id } });
     if (!order) throw new BadRequestException('Такой заявки не существует');
     await this.prismaService.order.update({

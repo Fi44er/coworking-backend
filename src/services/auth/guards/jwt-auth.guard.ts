@@ -21,31 +21,6 @@ export class JwtAuthGuard extends AuthGuard('jwt') implements CanActivate {
     if (_isPublic) {
       return true;
     }
-    // const request = ctx.switchToHttp().getRequest();
-    // const token = request.cookies['accesstoken'];
-
-    // this.validateToken(token);
     return super.canActivate(ctx);
   }
-
-  // async validateToken(token: string) {
-  //   console.log(token);
-  //   token = token.replace('Bearer ', '');
-  //   try {
-  //     console.log(token);
-  //     const decoded: jwtPayload = jwt.verify(
-  //       token,
-  //       this.configService.get('JWT_SECRET'),
-  //     ) as jwtPayload;
-  //     // payload токена(id, login, roles)
-  //     // const user = await this.adminService.findOneAdmin(String(decoded.id));
-  //     // if (!user) {
-  //     //   throw new UnauthorizedException();
-  //     // }
-  //     return true;
-  //   } catch (err) {
-  //     console.log(err);
-  //     throw new UnauthorizedException();
-  //   }
-  // }
 }
