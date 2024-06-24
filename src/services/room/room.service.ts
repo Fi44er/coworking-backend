@@ -23,12 +23,20 @@ export class RoomService {
 
   // --------------- Add or Update Room --------------- //
   async addRoom(dto: CreateRoomDto): Promise<CreateRoomResponse> {
+    const regx =
+      /\["(?!(?:Пн|Вт|Ср|Чт|Пт|Сб|Вс)(?:, ?\1)*\])(?:Пн|Вт|Ср|Чт|Пт|Сб|Вс)(?:, ?(?!(?:Пн|Вт|Ср|Чт|Пт|Сб|Вс)(?:, ?\3)*\])(?:Пн|Вт|Ср|Чт|Пт|Сб|Вс))*"\]/;
+
+    if (!regx.test(JSON.stringify(dto.weekDays))) {
+      throw new BadRequestException(
+        'Некорректно указаны дни недели. Корректные дни: Пн, Вт, Ср, Чт, Пт, Сб, Вс',
+      );
+    }
+
     const room = await this.prismaService.room.create({
       data: {
         address: dto.address,
         name: dto.name,
         description: dto.description,
-        price: dto.price,
         places: dto.places,
         weekDays: dto.weekDays,
         timeStart: new Date('1970-01-01T' + dto.timeStart + 'Z'),
@@ -68,7 +76,6 @@ export class RoomService {
         address: dto?.address,
         name: dto?.name,
         description: dto?.description,
-        price: dto?.price,
         places: dto?.places,
         weekDays: dto?.weekDays,
         timeStart: dto?.timeStart,

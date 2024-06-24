@@ -39,7 +39,6 @@ model Room {
   address     String
   name        String
   description String
-  price       Int
   places      Int
   weekDays    String[]  @map("week-days")
   timeStart   DateTime  @map("time-start") @db.Time()
@@ -66,7 +65,6 @@ model Order {
   phoneNumber String @map("phone-number")
 
   status  OrderStatus @default(PENDING)
-  payment Int         @default(0)
 
   @@map("orders")
 }

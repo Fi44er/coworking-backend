@@ -1,36 +1,36 @@
-import { ApiProperty } from "@nestjs/swagger"
-import { IsNotEmpty, IsNumber, IsString } from "class-validator"
+import { ApiProperty } from '@nestjs/swagger';
+import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
 
 export class CreateRoomDto {
-    @ApiProperty()
-    @IsString()
-    address: string
+  @ApiProperty()
+  @IsString()
+  address: string;
 
-    @ApiProperty()
-    @IsString()
-    name: string
+  @ApiProperty()
+  @IsString()
+  name: string;
 
-    @ApiProperty()
-    @IsString()
-    description: string
+  @ApiProperty()
+  @IsString()
+  description: string;
 
-    @ApiProperty()
-    @IsNumber()
-    price: number
+  @ApiProperty()
+  @IsNumber()
+  price: number;
 
-    @ApiProperty()
-    @IsNumber()
-    places: number 
+  @ApiProperty()
+  @IsNumber()
+  places: number;
 
-    @ApiProperty()
-    @IsNotEmpty()
-    weekDays: string[]
+  @ApiProperty()
+  @IsNotEmpty()
+  weekDays: string[];
 
-    @ApiProperty()
-    @IsNotEmpty()
-    timeStart: string
+  @ApiProperty()
+  @IsNotEmpty()
+  timeStart: string;
 
-    @ApiProperty()
-    @IsNotEmpty()
-    timeEnd: string
+  @ApiProperty()
+  @IsNotEmpty()
+  timeEnd: string;
 }

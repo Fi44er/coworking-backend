@@ -1,31 +1,27 @@
-import { ApiProperty } from "@nestjs/swagger"
+import { ApiProperty } from '@nestjs/swagger';
 
 export class RoomResponse {
+  id: number;
+  @ApiProperty()
+  address: string;
 
-    id: number
-    @ApiProperty()
-    address: string
+  @ApiProperty()
+  name: string;
 
-    @ApiProperty()
-    name: string
+  @ApiProperty()
+  description: string;
 
-    @ApiProperty()
-    description: string
+  @ApiProperty()
+  places: number;
 
-    @ApiProperty()
-    price: number
+  @ApiProperty()
+  weekDays: string[];
 
-    @ApiProperty()
-    places: number
+  @ApiProperty()
+  timeStart: Date;
 
-    @ApiProperty()
-    weekDays: string[]
+  @ApiProperty()
+  timeEnd: Date;
 
-    @ApiProperty()
-    timeStart: Date
-    
-    @ApiProperty()
-    timeEnd: Date
-
-    picture: {name: string}[]
+  picture: { name: string }[];
 }

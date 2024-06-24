@@ -1,9 +1,9 @@
-import { ApiProperty } from "@nestjs/swagger"
+import { ApiProperty } from '@nestjs/swagger';
 
 export class UploadPictureResponse {
-    @ApiProperty()
-    roomId: number
+  @ApiProperty()
+  roomId: number;
 
-    @ApiProperty()
-    name: string
+  @ApiProperty()
+  name: string;
 }

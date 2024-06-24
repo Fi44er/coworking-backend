@@ -37,7 +37,6 @@ export class OrderService {
 
     await this.checkingFreeTime(new Date(dto.timeStart), timeEnd, dto.roomId);
 
-    const payment = +dto.duration * room.price;
     const order = await this.prismaService.order.create({
       data: {
         roomId: dto.roomId,
@@ -47,7 +46,6 @@ export class OrderService {
         fio: dto.fio,
         email: dto.email,
         phoneNumber: dto.phoneNumber,
-        payment,
       },
     });
 
