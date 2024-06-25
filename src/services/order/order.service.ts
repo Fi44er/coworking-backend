@@ -164,12 +164,12 @@ export class OrderService {
 
     if (convertStringToTime(dto.timeStart) >= convertStringToTime(dto.timeEnd))
       throw new BadRequestException('Некорректно указан промежуток времени');
-    const existingOrder = await this.checkingFreeTime(
+
+    await this.checkingFreeTime(
       new Date(dto.timeStart),
       new Date(dto.timeEnd),
       order.roomId,
     );
-    if (existingOrder) throw new BadRequestException('Данное время уже занято');
     return await this.prismaService.order.update({
       where: { id },
       data: {
