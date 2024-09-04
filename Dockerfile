@@ -6,6 +6,6 @@ COPY . .
 
 RUN yarn install
 
-EXPOSE 3000
+EXPOSE 6060
 
 CMD [ "yarn", "start" ]
