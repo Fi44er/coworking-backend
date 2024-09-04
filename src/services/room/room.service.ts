@@ -140,7 +140,7 @@ export class RoomService {
           return;
         }
         const newname = `${v4()}.${file.originalname.split('.')[1]}`;
-        await writeFile(join(uploadFolder, newname), file.buffer, (error) => {
+        writeFile(join(uploadFolder, newname), file.buffer, (error) => {
           if (error)
             throw new InternalServerErrorException('Ошибка при записи фото');
         });
