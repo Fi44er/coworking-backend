@@ -10,9 +10,4 @@ export class AdminResponse implements Admin {
 
     @ApiProperty()
     password: string;
-
-    constructor(admin: Admin) {
-        this.id = admin.id;
-        this.login = admin.login;
-    }
 }

@@ -62,9 +62,8 @@ export class AuthService {
         id: user.id,
         login: user.login,
       });
-    const accessExp = convertToMilisecondsUtil(
-      this.configService.get('JWT_EXP'),
-    );
+    const exp = this.configService.get('JWT_EXP') ?? '1d';
+    const accessExp = convertToMilisecondsUtil(exp);
     await this.getRefreshToken(user.id);
     return { token: accessToken, exp: accessExp };
   }

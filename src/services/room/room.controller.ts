@@ -47,7 +47,7 @@ export class RoomController {
 
   // --------------- Get All rooms --------------- //
 
-  @Public()
+ // @Public()
   @Get('get-all-rooms')
   async getAllRooms(): Promise<RoomResponse[]> {
     return this.roomService.getAllRooms();

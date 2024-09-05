@@ -19,15 +19,15 @@ services:
     ports:
       - 8080:8080
 
-  server:
-    build: .
-    ports:
-      - 6060:6060
-    environment:
-      DATABASE_URL: postgresql://root:root@db:5432/db
-      PORT: 6060
-    depends_on:
-      - db
+  # server:
+  #   build: .
+  #   ports:
+  #     - 6060:6060
+  #   environment:
+  #     DATABASE_URL: postgresql://root:root@db:5432/db
+  #     PORT: 6060
+  #   depends_on:
+  #     - db
 
 volumes:
   pgdata:
