@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { Admin } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import * as bcrypt from 'bcrypt';
@@ -10,6 +10,14 @@ export class AdminService {
   // --------------- Create Admin --------------- //
   async save(admin: Partial<Admin>) {
     const hashPassword = this.hashPassword(admin.password);
+    const existAdmin = await this.prismaService.admin.findFirst({
+      where: {
+        login: admin.login,
+      },
+    });
+    if (existAdmin) {
+      throw new BadRequestException('Такой логин уже существует!')
+    }
     return await this.prismaService.admin.create({
       data: {
         login: admin.login,

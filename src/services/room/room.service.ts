@@ -15,6 +15,7 @@ import { RoomResponse } from './Response/Room.response.dto';
 import { CreateRoomResponse } from './Response/CreateRoom.response';
 
 const UPLOAD_PATH = '../../../../uploads/';
+
 @Injectable()
 export class RoomService {
   constructor(private readonly prismaService: PrismaService) {}
