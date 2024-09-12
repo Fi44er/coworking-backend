@@ -98,6 +98,7 @@ export class OrderService {
     timeStart: Date,
     timeEnd: Date,
     roomId: number,
+    id?: number,
   ): Promise<boolean> {
     const room = await this.prismaService.room.findUnique({
       where: { id: roomId },
@@ -133,7 +134,12 @@ export class OrderService {
       );
 
     const existOrders = await this.prismaService.order.findMany({
-      where: { roomId: roomId },
+      where: {
+        roomId: roomId,
+        NOT: {
+          id: id ?? undefined,
+        },
+      },
       select: {
         timeStart: true,
         timeEnd: true,
