@@ -43,6 +43,7 @@ export class OrderController {
   }
 
   // --------------- Get All Order --------------- //
+  @Public()
   @Get('get-all-orders')
   @ApiOperation({
     summary: 'Get all orders',
@@ -62,6 +63,7 @@ export class OrderController {
   }
 
   // --------------- Get Order by id--------------- //
+  @Public()
   @Get('get-order-by-id/:id')
   @ApiOperation({
     summary: 'Get order by ID',
