@@ -4,7 +4,7 @@ import {
   Injectable,
   InternalServerErrorException,
 } from '@nestjs/common';
-import { existsSync, writeFile } from 'fs';
+import { existsSync } from 'fs';
 import { access, mkdir, rm } from 'fs/promises';
 import { join } from 'path';
 import { v4 } from 'uuid';
@@ -13,8 +13,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { GetPicturesNameResponse } from './Response/GetPicturesName.response';
 import { RoomResponse } from './Response/Room.response.dto';
 import { CreateRoomResponse } from './Response/CreateRoom.response';
-
-const UPLOAD_PATH = '../../../../uploads/';
+import * as sharp from 'sharp';
 
 @Injectable()
 export class RoomService {
@@ -24,14 +23,14 @@ export class RoomService {
 
   // --------------- Add or Update Room --------------- //
   async addRoom(dto: CreateRoomDto): Promise<CreateRoomResponse> {
-    const regx =
-      /^(?:Пн(?!.*Пн)|Вт(?!.*Вт)|Ср(?!.*Ср)|Чт(?!.*Чт)|Пт(?!.*Пт)|Сб(?!.*Сб)|Вс(?!.*Вс))(?:,(?:Пн(?!.*Пн)|Вт(?!.*Вт)|Ср(?!.*Ср)|Чт(?!.*Чт)|Пт(?!.*Пт)|Сб(?!.*Сб)|Вс(?!.*Вс)))*$/;
-
-    if (!regx.test(dto.weekDays.join(','))) {
-      throw new BadRequestException(
-        'Некорректно указаны дни недели. Корректные дни: Пн, Вт, Ср, Чт, Пт, Сб, Вс',
-      );
-    }
+    const test = new Set(dto.weekDays);
+    test.forEach((element) => {
+      if (!VALID_WEEK_DAYS_REGEX.test(element)) {
+        throw new BadRequestException(
+          'Некорректно указаны дни недели. Корректные дни: Пн, Вт, Ср, Чт, Пт, Сб, Вс',
+        );
+      }
+    });
 
     const room = await this.prismaService.room.create({
       data: {
@@ -79,8 +78,9 @@ export class RoomService {
         description: dto?.description,
         places: dto?.places,
         weekDays: dto?.weekDays,
-        timeStart: dto?.timeStart,
-        timeEnd: dto?.timeEnd,
+        timeStart:
+          dto?.timeStart && new Date('1970-01-01T' + dto.timeStart + 'Z'),
+        timeEnd: dto?.timeEnd && new Date('1970-01-01T' + dto.timeEnd + 'Z'),
       },
     });
     return room;
@@ -117,11 +117,17 @@ export class RoomService {
     roomId: number,
     files: Express.Multer.File[],
   ): Promise<GetPicturesNameResponse[]> {
+    const existImages = await this.getPicturesByRoomId(roomId);
+    if (existImages.length >= 5) {
+      throw new BadRequestException('Максимальное количество изображений - 5');
+    }
+
     const uploadFolder = join(__dirname, UPLOAD_PATH);
 
     const room = await this.prismaService.room.findUnique({
       where: { id: roomId },
     });
+
     if (!room) throw new BadRequestException('Такого помещения не существует');
 
     try {
@@ -135,25 +141,36 @@ export class RoomService {
     }
 
     const picturesName = [];
+
     await Promise.all(
       files.map(async (file) => {
-        if (!file.originalname.match(/\.(jpg|jpeg|png|webp)$/)) {
+        if (!file.originalname.match(VALID_IMAGE_EXTENSIONS)) {
           return;
         }
-        const newname = `${v4()}.${file.originalname.split('.')[1]}`;
-        writeFile(join(uploadFolder, newname), file.buffer, (error) => {
-          if (error)
-            throw new InternalServerErrorException('Ошибка при записи фото');
-        });
-        picturesName.push({ roomId: roomId, name: newname });
+        const newname = `${v4()}.webp`;
+
+        try {
+          await sharp(file.buffer)
+            .toFormat('webp')
+            .resize({ width: 650 })
+            .webp({ quality: 50 })
+            .toFile(join(uploadFolder, newname));
+
+          picturesName.push({ roomId: roomId, name: newname });
+        } catch (error) {
+          console.log(error);
+          throw new InternalServerErrorException('Ошибка при обработке фото');
+        }
       }),
     );
+
     if (picturesName.length === 0) {
       throw new BadRequestException(
-        'Загружаемый файл должен быть определенного типа(jpg, jpeg, png, webp))',
+        'Загружаемый файл должен быть определенного типа(jpg, jpeg, png, webp)',
       );
     } else {
       await this.prismaService.picture.createMany({ data: picturesName });
+
       return picturesName;
     }
   }
