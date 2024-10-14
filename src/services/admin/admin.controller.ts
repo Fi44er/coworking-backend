@@ -1,7 +1,5 @@
 import { AdminResponse } from './response/admin.response';
 import { Body, Controller, Get, Param, Post } from '@nestjs/common';
-import { AdminService } from './admin.service';
-import { CreateAdminDto } from './DTO/create.dto';
 import {
   ApiTags,
   ApiBody,
@@ -10,6 +8,8 @@ import {
   ApiOperation,
 } from '@nestjs/swagger';
 import { Public } from 'lib/decorators/public.decorator';
+import { AdminService } from './service/admin.service';
+import { CreateAdminDto } from './dto';
 
 @Controller('admin')
 @ApiTags('Admin')

@@ -1,14 +1,17 @@
 import { Injectable } from '@nestjs/common';
-import { Room } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { UpdateRoomDto } from '../DTO/updateRoom.dto';
-import { CreateRoomDto } from '../DTO/createRoom.dto';
+import {
+  ICreateRoom,
+  IRoom,
+  IRoomResponse,
+  IUpdateRoom,
+} from '../interface/roomInterface';
 
 @Injectable()
 export class RoomRepository {
   constructor(private readonly prismaService: PrismaService) {}
 
-  async create(data: CreateRoomDto): Promise<Room> {
+  async create(data: ICreateRoom): Promise<IRoom> {
     const { timeStart, timeEnd, ...rest } = data;
     return this.prismaService.room.create({
       data: {
@@ -19,7 +22,7 @@ export class RoomRepository {
     });
   }
 
-  async findMany(): Promise<Room[]> {
+  async findMany(): Promise<IRoomResponse[]> {
     return this.prismaService.room.findMany({
       include: {
         picture: {
@@ -31,7 +34,7 @@ export class RoomRepository {
     });
   }
 
-  async findByID(id: number): Promise<Room> {
+  async findByID(id: number): Promise<IRoomResponse> {
     return this.prismaService.room.findUnique({
       where: { id },
       include: {
@@ -44,7 +47,7 @@ export class RoomRepository {
     });
   }
 
-  async update(id: number, dto: UpdateRoomDto): Promise<Room> {
+  async update(id: number, dto: IUpdateRoom): Promise<IRoom> {
     const { timeStart, timeEnd, ...rest } = dto;
     return this.prismaService.room.update({
       where: { id },
@@ -56,7 +59,7 @@ export class RoomRepository {
     });
   }
 
-  async delete(id: number): Promise<Room> {
+  async delete(id: number): Promise<IRoom> {
     return this.prismaService.room.delete({ where: { id } });
   }
 }

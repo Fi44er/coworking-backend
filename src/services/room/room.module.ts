@@ -1,8 +1,11 @@
 import { Module } from '@nestjs/common';
 import { RoomController } from './room.controller';
-import { RoomService } from './room.service';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
+import { RoomService } from './service/room.service';
+import { PictureService } from './service/picture.service';
+import { RoomRepository } from './repository/room.repository';
+import { PictureRepository } from './repository/picture.repository';
 
 @Module({
   imports: [
@@ -12,6 +15,7 @@ import { join } from 'path';
     }),
   ],
   controllers: [RoomController],
-  providers: [RoomService],
+  providers: [RoomService, PictureService, RoomRepository, PictureRepository],
+  exports: [RoomService],
 })
 export class RoomModule {}

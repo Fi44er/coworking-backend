@@ -1,7 +1,8 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { RoomRepository } from '../repository/room.repository';
-import { CreateRoomDto } from '../DTO/createRoom.dto';
-import { CreateRoomResponse } from '../Response/CreateRoom.response';
+import { CreateRoomResponse, RoomResponse } from '../response/room.response';
+import { CreateRoomDto, UpdateRoomDto } from '../dto';
+import { VALID_WEEK_DAYS_REGEX } from '../constant/constants';
 
 @Injectable()
 export class RoomService {
@@ -19,16 +20,15 @@ export class RoomService {
     return await this.roomRepository.create(dto);
   }
 
-  async getAll(): Promise<CreateRoomResponse[]> {
+  async getAll(): Promise<RoomResponse[]> {
     return await this.roomRepository.findMany();
   }
 
-  async getById(id: number): Promise<CreateRoomResponse> {
-    const room = await this.roomRepository.findByID(id);
-    return room;
+  async getById(id: number): Promise<RoomResponse> {
+    return await this.roomRepository.findByID(id);
   }
 
-  async update(id: number, dto: CreateRoomDto): Promise<CreateRoomResponse> {
+  async update(id: number, dto: UpdateRoomDto): Promise<CreateRoomResponse> {
     const existRoom = await this.roomRepository.findByID(id);
     if (!existRoom)
       throw new BadRequestException('Такой комнаты не существует');

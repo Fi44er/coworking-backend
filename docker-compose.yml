@@ -13,21 +13,21 @@ services:
     ports:
       - 5432:5432
 
-  adminer:
-    image: adminer
-    restart: always
+  server:
+    build: .
     ports:
-      - 8080:8080
-
-  # server:
-  #   build: .
-  #   ports:
-  #     - 6060:6060
-  #   environment:
-  #     DATABASE_URL: postgresql://root:root@db:5432/db
-  #     PORT: 6060
-  #   depends_on:
-  #     - db
+      - 3000:3000
+    environment:
+      DATABASE_URL: postgresql://root:root@db:5432/db
+      CLIENT_URL: http://localhost:5173
+      JWT_SECRET: qdwH23rvrvww3r4r3
+      JWT_EXP: 1d
+      MAIL_HOST: smtp.gmail.com
+      MAIL_USER: fakeroot94@gmail.com
+      MAIL_PASSWORD: memm cchg tscz gioi
+      MAIL_FROM: fakeroot94@gmail.com
+    depends_on:
+      - db
 
 volumes:
   pgdata:

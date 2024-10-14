@@ -10,11 +10,7 @@ import {
   UploadedFiles,
   UseInterceptors,
 } from '@nestjs/common';
-import { RoomService } from './room.service';
 import { FilesInterceptor } from '@nestjs/platform-express';
-import { CreateRoomDto } from './DTO/CreateRoom.dto';
-import { GetPicturesNameResponse } from './Response/GetPicturesName.response';
-import { RoomResponse } from './Response/Room.response.dto';
 import {
   ApiBadRequestResponse,
   ApiBody,
@@ -23,13 +19,20 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { CreateRoomResponse } from './Response/CreateRoom.response';
 import { Public } from 'lib/decorators/public.decorator';
+import { CreateRoomResponse, RoomResponse } from './response/room.response';
+import { RoomService } from './service/room.service';
+import { GetPicturesNameResponse } from './response/picture.response';
+import { PictureService } from './service/picture.service';
+import { CreateRoomDto } from './dto';
 
 @ApiTags('rooms')
 @Controller('room')
 export class RoomController {
-  constructor(private readonly roomService: RoomService) {}
+  constructor(
+    private readonly roomService: RoomService,
+    private readonly pictureService: PictureService,
+  ) {}
   // ------------------------------ Room ------------------------------ //
 
   // --------------- Add Room --------------- //
@@ -42,7 +45,7 @@ export class RoomController {
     type: CreateRoomResponse,
   })
   async addRoom(@Body() dto: CreateRoomDto): Promise<CreateRoomResponse> {
-    return this.roomService.addRoom(dto);
+    return this.roomService.create(dto);
   }
 
   // --------------- Get All rooms --------------- //
@@ -50,7 +53,7 @@ export class RoomController {
   @Public()
   @Get('get-all-rooms')
   async getAllRooms(): Promise<RoomResponse[]> {
-    return this.roomService.getAllRooms();
+    return this.roomService.getAll();
   }
 
   // --------------- Get Room by id --------------- //
@@ -60,7 +63,7 @@ export class RoomController {
   @ApiParam({ name: 'id', description: 'Room ID' })
   @ApiResponse({ status: 200, description: 'Room found', type: RoomResponse })
   async getRoom(@Param('id') roomId: string): Promise<RoomResponse> {
-    return this.roomService.getRoom(+roomId);
+    return this.roomService.getById(+roomId);
   }
 
   // --------------- Update Room by id --------------- //
@@ -79,7 +82,7 @@ export class RoomController {
     @Body() dto: Partial<CreateRoomDto>,
   ): Promise<CreateRoomResponse> {
     if (!id) throw new BadRequestException('Room ID not provided');
-    return this.roomService.updateRoom(+id, dto);
+    return this.roomService.update(+id, dto);
   }
 
   // --------------- Delete Room by id --------------- //
@@ -88,7 +91,7 @@ export class RoomController {
   @ApiParam({ name: 'id', description: 'Room ID' })
   @ApiResponse({ status: 200, description: 'Room successfully deleted' })
   async deleteRoom(@Param('id') roomId: string): Promise<boolean> {
-    return this.roomService.deleteRoom(+roomId);
+    return this.roomService.delete(+roomId);
   }
 
   // ------------------------------ Picture ------------------------------ //
@@ -107,7 +110,7 @@ export class RoomController {
     @Param('id') roomId: string,
     @UploadedFiles() files: Express.Multer.File[],
   ): Promise<GetPicturesNameResponse[]> {
-    return this.roomService.uploadPicture(+roomId, files);
+    return this.pictureService.upload(+roomId, files);
   }
 
   // --------------- Get Names picture by room id --------------- //
@@ -123,7 +126,7 @@ export class RoomController {
   async getNamesPictureByRoomId(
     @Param('id') roomId: string,
   ): Promise<GetPicturesNameResponse[]> {
-    return this.roomService.getPicturesByRoomId(+roomId);
+    return this.pictureService.getByRoomID(+roomId);
   }
 
   // --------------- Delete Picture by id --------------- //
@@ -132,6 +135,6 @@ export class RoomController {
   @ApiParam({ name: 'name', description: 'Picture name' })
   @ApiResponse({ status: 200, description: 'Picture deleted', type: Boolean })
   async deletePicture(@Param('name') pictureName: string): Promise<boolean> {
-    return this.roomService.deletePicture(pictureName);
+    return this.pictureService.delete(pictureName);
   }
 }

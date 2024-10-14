@@ -14,7 +14,9 @@ import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
-    ServeStaticModule.forRoot({ rootPath: join(__dirname, '../../uploads/') }),
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '../../uploads/'),
+    }),
     ConfigModule.forRoot({ isGlobal: true }),
     ScheduleModule.forRoot(),
     PrismaModule,

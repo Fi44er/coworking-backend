@@ -9,8 +9,9 @@ import { join } from 'path';
 import * as sharp from 'sharp';
 import { v4 } from 'uuid';
 import { access, mkdir, rm } from 'fs/promises';
-import { CreatePictureDto } from '../DTO/createPicture';
-import { GetPicturesNameResponse } from '../Response/GetPicturesName.response';
+import { GetPicturesNameResponse } from '../response/picture.response';
+import { CreatePictureDto } from '../dto';
+import { UPLOAD_PATH, VALID_IMAGE_EXTENSIONS } from '../constant/constants';
 
 @Injectable()
 export class PictureService {
@@ -19,7 +20,7 @@ export class PictureService {
     private readonly roomRepository: RoomRepository,
   ) {}
 
-  async uploadPicture(
+  async upload(
     roomId: number,
     files: Express.Multer.File[],
   ): Promise<GetPicturesNameResponse[]> {
@@ -78,7 +79,7 @@ export class PictureService {
     return await this.pictureRepository.findManyByRoomID(roomId);
   }
 
-  async deletePicture(name: string): Promise<boolean> {
+  async delete(name: string): Promise<boolean> {
     try {
       const picture = await this.pictureRepository.getByName(name);
 

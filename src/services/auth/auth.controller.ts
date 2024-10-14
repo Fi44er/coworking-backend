@@ -1,4 +1,3 @@
-import { JwtStrategy } from './strategies/jwt.strategy';
 import {
   Body,
   Controller,
@@ -8,8 +7,8 @@ import {
   Res,
   UnauthorizedException,
 } from '@nestjs/common';
-import { AuthService } from './auth.service';
-import { LoginAdminDto } from './DTO/login.dto';
+import { AuthService } from './service/auth.service';
+import { LoginAdminDto } from './dto';
 import { ConfigService } from '@nestjs/config';
 import { Cookie } from 'lib/decorators/cookies.decorator';
 import { Tokens } from './interfaces/token.interface';
@@ -19,16 +18,15 @@ import { ApiTags, ApiBody, ApiResponse, ApiOperation } from '@nestjs/swagger';
 
 const ACCESS_TOKEN = 'accesstoken';
 
-@Public()
 @Controller('auth')
 @ApiTags('Auth')
 export class AuthController {
   constructor(
     private readonly authService: AuthService,
     private readonly configService: ConfigService,
-    private readonly jwtStrategy: JwtStrategy,
   ) {}
 
+  @Public()
   @Post('login')
   @ApiOperation({ summary: 'Login' })
   @ApiBody({ type: LoginAdminDto })
@@ -79,8 +77,8 @@ export class AuthController {
       httpOnly: false,
       sameSite: 'lax',
       expires: new Date(Date.now() + tokens.exp),
-      // secure:
-      //   this.configService.get('NODE_ENV', 'development') === 'production',
+      secure:
+        this.configService.get('NODE_ENV', 'development') === 'production',
       path: '/',
     });
 

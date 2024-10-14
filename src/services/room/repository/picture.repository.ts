@@ -1,20 +1,22 @@
 import { Injectable } from '@nestjs/common';
-import { Picture } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { GetPicturesNameResponse } from '../Response/GetPicturesName.response';
-import { CreatePictureDto } from '../DTO/createPicture';
+import {
+  ICreatePicture,
+  IGetPicturesName,
+  IPicture,
+} from '../interface/pictureInterface';
 
 @Injectable()
 export class PictureRepository {
   constructor(private readonly prismaService: PrismaService) {}
 
-  async createMany(data: CreatePictureDto[]): Promise<Picture[]> {
+  async createMany(data: ICreatePicture[]): Promise<IPicture[]> {
     return this.prismaService.picture.createManyAndReturn({
       data: data,
     });
   }
 
-  async findManyByRoomID(roomId: number): Promise<GetPicturesNameResponse[]> {
+  async findManyByRoomID(roomId: number): Promise<IGetPicturesName[]> {
     return this.prismaService.picture.findMany({
       where: { roomId: roomId },
       select: {
@@ -23,7 +25,7 @@ export class PictureRepository {
     });
   }
 
-  async getByName(name: string): Promise<Picture> {
+  async getByName(name: string): Promise<IPicture> {
     return this.prismaService.picture.findUnique({ where: { name } });
   }
 
