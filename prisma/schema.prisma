@@ -1,0 +1,86 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// --------------- Admin Table --------------- //
+model Admin {
+  id       String  @id @default(uuid())
+  login    String  @unique
+  password String
+  Token    Token[]
+
+  @@map("admins")
+}
+
+// --------------- Token Table --------------- //
+model Token {
+  token   String   @unique
+  exp     DateTime
+  admin   Admin    @relation(fields: [adminId], references: [id], onDelete: Cascade)
+  adminId String   @map("admin-id")
+
+  @@map("tokens")
+}
+
+// --------------- Room Table --------------- //
+model Room {
+  id          Int       @id @default(autoincrement())
+  address     String
+  name        String
+  description String
+  places      Int
+  weekDays    String[]  @map("week-days")
+  timeStart   DateTime  @map("time-start") @db.Time()
+  timeEnd     DateTime  @map("time-end") @db.Time()
+  order       Order[]
+  picture     Picture[]
+
+  @@map("rooms")
+}
+
+// --------------- Buyers Table --------------- //
+model Order {
+  id     Int  @id @default(autoincrement())
+  room   Room @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  roomId Int  @map("room-id")
+
+  timeStart DateTime @map("time-start")
+  timeEnd   DateTime @map("time-end")
+
+  summaryEvent String @map("summary-event")
+
+  fio         String
+  email       String
+  phoneNumber String @map("phone-number")
+
+  status  OrderStatus @default(PENDING)
+
+  @@map("orders")
+}
+
+enum OrderStatus {
+  ACCEPTED
+  PENDING
+  REJECTED
+}
+
+// --------------- Pictures Table --------------- //
+model Picture {
+  id     Int    @id @default(autoincrement())
+  name   String @unique
+  room   Room   @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  roomId Int    @map("room-id")
+
+  @@map("pictures")
+}
